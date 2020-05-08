@@ -20,7 +20,6 @@ public:
     void setPieceType(pieceType pieceType);
     void setPieceColor( pieceColor pieceColor);
 
-    bool legalMove(Piece piece, Piece target);
     bool isCheck(Piece king);
 
 private:

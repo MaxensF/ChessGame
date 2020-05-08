@@ -1,4 +1,5 @@
 #include "piece.h"
+#include <board.h>
 #include <string>
 
 Piece::Piece(int Position, pieceColor color,pieceType pieceType)
@@ -45,52 +46,10 @@ void Piece::setPieceColor(pieceColor color){
 
 
 bool Piece ::isCheck(Piece king){
-return false
+return false;
 }
 
 
-bool Piece::legalMove(Piece piece, Piece target){
 
-    //Can't move on a piece of the same color
-    if (piece.getPieceColor() == target.getPieceColor()){
-        return false;
-    }
 
-    //Can't move on a king
-    if (target.getPieceType() == KING){
-        return false;
-    }
 
-    //Moving a king
-    if(piece.getPieceType() == KING){
-
-    }
-
-    //Moving a queen
-    else if(piece.getPieceType() == QUEEN){
-
-    }
-
-    //Moving a knight
-    else if(piece.getPieceType() == KNIGHT){
-
-    }
-
-    //Moving a bishop
-    else if(piece.getPieceType() == BISHOP){
-
-    }
-
-    //Moving a Rook
-    else if(piece.getPieceType() == ROOK){
-
-    }
-
-    //Moving a pawn
-    else if(piece.getPieceType() == PAWN){
-
-    }
-
-    return true;
-
-}
