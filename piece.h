@@ -16,11 +16,11 @@ public:
     pieceColor getPieceColor();
     pieceType getPieceType();
 
-    void setPostion(int position);
+    void setPosition(int position);
     void setPieceType(pieceType pieceType);
     void setPieceColor( pieceColor pieceColor);
 
-    bool isCheck(Piece king);
+
 
 private:
     int m_position;

@@ -11,7 +11,7 @@ Piece::Piece(int Position, pieceColor color,pieceType pieceType)
 
 
 
-void Piece::setPostion(int position){
+void Piece::setPosition(int position){
     this->m_position = position;
 }
 
@@ -45,9 +45,7 @@ void Piece::setPieceColor(pieceColor color){
 
 
 
-bool Piece ::isCheck(Piece king){
-return false;
-}
+
 
 
 

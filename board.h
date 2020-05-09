@@ -19,7 +19,20 @@ public:
     bool linePieceBetween(Piece piece, Piece target);
     bool columnPieceBetween(Piece piece, Piece target);
     bool diagonalPieceBetween(Piece piece, Piece target);
-    void movePiece(Piece);
+    bool isCheck(Piece king);
+    bool willBeCheck(Piece piece, Piece target);
+    bool movePiece(Piece piece, Piece target);
+
+    void showBoard();
+    void AddNotAlivePiece(Piece piece);
+    void movePieceAnyway(Piece piece, Piece target);
+
+    std::vector<Piece> getNotAlivePiece();
+    Piece findBlackKing();
+    Piece findWhiteKing();
+
+    int getMoveNumber();
+
 
 private:
     const std::string m_coordinates [64] ={"a8","b8","c8","d8","e8","f8","g8","h8",
@@ -32,6 +45,7 @@ private:
                                           "a1","b1","c1","d1","e1","f1","g1","h1"};
     std::vector <Piece> m_board ;
     std::vector <Piece> m_notAlive;
+    int m_moveNumber;
 };
 
 #endif // BOARD_H
