@@ -430,7 +430,7 @@ bool Board::legalMove(Piece piece, Piece target){
                 }
 
                 //Pawns can skip 1 square if it's first time they move
-                if((piece.getPosition() >= 57) && (piece.getPosition() <= 64)){
+                if((piece.getPosition() >= 48) && (piece.getPosition() <= 56)){
                     if((piece.getPosition() == target.getPosition() + 16) && target.getPieceType() == NONE){
                         return true;
                     }
@@ -573,7 +573,6 @@ bool Board::movePiece(Piece piece, Piece target){
         if(target.getPieceType() != NONE){
             AddNotAlivePiece(target);
         }
-
         Piece empty(piece.getPosition(),NOCOLOR,NONE);
         int targetPosition,piecePosition;
         targetPosition=target.getPosition()-1;
@@ -590,10 +589,36 @@ bool Board::movePiece(Piece piece, Piece target){
 
         m_moveNumber +=1;
 
-
         //Indicate that the piece has move at least one time.
         //Used for castling
         this->m_board.at(targetPosition).setHasMoved(true);
+
+
+        //If a pawn arrive at the end of the board
+        //the pawn is promoted to a queen/rook/knight/bishop
+        if((piece.getPieceType() == PAWN)){
+            switch(piece.getColor()){
+                case(BLACK):
+                    if((piece.getPosition() >=56) && (piece.getPosition() <=64)){
+                        Piece promotion(1,BLACK,QUEEN);
+                        this->promotion(piece, promotion);
+
+                    }
+                    break;
+                case(WHITE):
+                    if((piece.getPosition() >= 1) && (piece.getPosition() <= 8 )){
+                        Piece promotion(1,WHITE,QUEEN);
+                        this->promotion(piece,promotion);
+
+                     }
+                    break;
+            case(NOCOLOR):
+                    break;
+
+            }
+
+        }
+
 
         //Change turn
         switch(m_turn){
@@ -1029,3 +1054,26 @@ bool Board::isDraw(){
 
     return false;
 }
+
+
+
+
+
+//Promote a pawn into the piece in parameter
+void Board::promotion(Piece pawn ,Piece piece){
+
+    int pawnPosition;
+    pawnPosition=pawn.getPosition()-1;
+
+    //Change the attribute "position" of the piece by the position of the pawn
+    piece.setPosition(pawn.getPosition());
+
+    //Replace the pawn square by the piece
+    this->m_board.at(pawnPosition) = piece;
+
+}
+
+
+
+
+

@@ -26,6 +26,7 @@ public:
     bool movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece kingTarget);
     bool isDraw();
 
+    void promotion(Piece pawn,Piece piece);
     void showBoard();
     void AddNotAlivePiece(Piece piece);
     void movePieceAnyway(Piece piece, Piece target);
