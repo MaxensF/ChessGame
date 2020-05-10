@@ -2,11 +2,12 @@
 #include <board.h>
 #include <string>
 
-Piece::Piece(int Position, pieceColor color,pieceType pieceType)
+Piece::Piece(int Position, color color,pieceType pieceType)
 {
     m_color = color;
     m_position = Position;
     m_pieceType = pieceType;
+    m_hasMoved = false;
 }
 
 
@@ -33,13 +34,24 @@ void Piece::setPieceType(pieceType pieceType){
 }
 
 
-pieceColor Piece::getPieceColor(){
+color Piece::getColor(){
     return this->m_color;
 }
 
 
-void Piece::setPieceColor(pieceColor color){
+void Piece::setColor(color color){
     this->m_color = color;
+}
+
+
+void Piece::setHasMoved(bool hasMoved){
+    m_hasMoved = hasMoved;
+}
+
+
+
+bool Piece::getHasMoved(){
+    return m_hasMoved;
 }
 
 

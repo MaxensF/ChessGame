@@ -21,17 +21,21 @@ public:
     bool diagonalPieceBetween(Piece piece, Piece target);
     bool isCheck(Piece king);
     bool willBeCheck(Piece piece, Piece target);
+    bool isCheckMate();
     bool movePiece(Piece piece, Piece target);
+    bool movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece kingTarget);
 
     void showBoard();
     void AddNotAlivePiece(Piece piece);
     void movePieceAnyway(Piece piece, Piece target);
+    void castling(Piece rook);
 
     std::vector<Piece> getNotAlivePiece();
     Piece findBlackKing();
     Piece findWhiteKing();
 
     int getMoveNumber();
+
 
 
 private:
@@ -46,6 +50,9 @@ private:
     std::vector <Piece> m_board ;
     std::vector <Piece> m_notAlive;
     int m_moveNumber;
+    color m_turn;
+    bool m_blackCastled;
+    bool m_whiteCastled;
 };
 
 #endif // BOARD_H

@@ -64,7 +64,15 @@ Board::Board()
     m_board.push_back(wKnight);
     m_board.push_back(wRook);
 
+
     m_moveNumber=0;
+
+    //Whites always start
+    m_turn = WHITE;
+
+    //Nobody has castled
+    m_whiteCastled = false;
+    m_blackCastled = false;
 
 }
 
@@ -352,7 +360,7 @@ int numberOfPieceBetween =0;
 bool Board::legalMove(Piece piece, Piece target){
 
     //Can't move on a piece of the same color
-    if (piece.getPieceColor() == target.getPieceColor()){
+    if (piece.getColor() == target.getColor()){
         return false;
     }
     switch(piece.getPieceType()){
@@ -413,7 +421,7 @@ bool Board::legalMove(Piece piece, Piece target){
         //Moving a pawn
         case(PAWN):
             //Moving a white pawn
-            if(piece.getPieceColor() ==WHITE){
+            if(piece.getColor() ==WHITE){
                 if((piece.getPosition() == target.getPosition() +8) && (target.getPieceType() == NONE)){
                     return true;
                 }
@@ -481,7 +489,7 @@ bool Board::willBeCheck(Piece piece, Piece target){
     int numberOfPieceChecking = 0;
 
     //Moving a black piece
-    if(piece.getPieceColor() == BLACK){
+    if(piece.getColor() == BLACK){
         movePieceAnyway(piece, target);
         Piece blackKing = findBlackKing();
 
@@ -495,7 +503,7 @@ bool Board::willBeCheck(Piece piece, Piece target){
     }
 
     //Moving a white piece
-    if(piece.getPieceColor() == WHITE){
+    if(piece.getColor() == WHITE){
         movePieceAnyway(piece,target);
         Piece whiteKing = findWhiteKing();
 
@@ -523,7 +531,7 @@ bool Board::willBeCheck(Piece piece, Piece target){
 //Return true if the king is check
 bool Board::isCheck(Piece king){
     for(int i=1 ; i<=64; i++){
-        if(this->getPiece(i).getPieceColor() != king.getPieceColor()){
+        if(this->getPiece(i).getColor() != king.getColor()){
             if(legalMove(this->getPiece(i), king)){
 
             return true;
@@ -565,7 +573,9 @@ std::vector<Piece> Board::getNotAlivePiece(){
 //Move the piece on the targeted square
 //Return true if the move has been done successfully
 bool Board::movePiece(Piece piece, Piece target){
-    if(legalMove(piece, target) && !willBeCheck(piece, target) && (target.getPieceType() != KING)){
+
+
+    if(legalMove(piece, target) && !willBeCheck(piece, target) && (target.getPieceType() != KING) && (m_turn == piece.getColor())){
 
         //Add the piece which was on the target square in the vector of dead pieces
         if(target.getPieceType() != NONE){
@@ -587,6 +597,24 @@ bool Board::movePiece(Piece piece, Piece target){
         this->m_board.at(piecePosition) = empty;
 
         m_moveNumber +=1;
+
+
+        //Indicate that the piece has move at least one time.
+        //Used for castling
+        this->m_board.at(targetPosition).setHasMoved(true);
+
+        //Change turn
+        switch(m_turn){
+         case(WHITE):
+            m_turn =BLACK;
+            break;
+         case(BLACK):
+            m_turn =WHITE;
+            break;
+        case(NOCOLOR):
+            break;
+
+        }
 
         return true;
 
@@ -635,7 +663,7 @@ Piece Board::findBlackKing(){
     Piece empty(1,NOCOLOR,NONE);
 
     for(int i=1;i<=64;i++){
-        if((this->getPiece(i).getPieceType() == KING) && (this->getPiece(i).getPieceColor() == BLACK)){
+        if((this->getPiece(i).getPieceType() == KING) && (this->getPiece(i).getColor() == BLACK)){
             return this->getPiece(i);
         }
     }
@@ -653,7 +681,7 @@ Piece Board::findWhiteKing(){
     Piece empty(1,NOCOLOR,NONE);
 
     for(int i=1;i<=64;i++){
-        if((this->getPiece(i).getPieceType() == KING) && (this->getPiece(i).getPieceColor() == WHITE)){
+        if((this->getPiece(i).getPieceType() == KING) && (this->getPiece(i).getColor() == WHITE)){
             return this->getPiece(i);
         }
     }
@@ -700,4 +728,209 @@ void Board::showBoard(){
         }
 
     }
+}
+
+
+
+
+
+
+//Return true if it's your turn and your king is checkmate
+//Will be used every turn
+bool Board::isCheckMate(){
+
+
+    //Black's turn
+    if(m_turn ==BLACK){
+        Piece blackKing = findBlackKing();
+
+        //You have to be check to be checkmate
+        if(isCheck(blackKing)){
+            int numberOfCheck =0;
+            int numberOfPossibleCheck =0;
+
+            //Finding all black pieces
+            for(int i=1;i<=64;i++){
+                if(getPiece(i).getColor() == BLACK){
+
+                    //Looking all legal moves for every black pieces
+                    for(int j=1;j<=64;j++){
+                        if((legalMove(getPiece(i),getPiece(j))) && (getPiece(j).getPieceType() != KING)){
+                            numberOfPossibleCheck +=1;
+
+                            //Testing for every legal moves of every black pieces
+                            // if you will be check
+                            if(willBeCheck(getPiece(i),getPiece(j))){
+
+                                numberOfCheck +=1;
+
+
+                            }
+                        }
+                    }
+
+                }
+            }
+            if(numberOfCheck == numberOfPossibleCheck){
+                return true;
+            }
+
+        }
+
+
+    }
+
+    //White's turn
+    if(m_turn ==WHITE){
+        Piece whiteKing = findWhiteKing();
+
+        //You have to be check to be checkmate
+        if(isCheck(whiteKing)){
+            int numberOfCheck =0;
+            int numberOfPossibleCheck =0;
+
+            //Finding all white pieces
+            for(int i=1;i<=64;i++){
+                if(getPiece(i).getColor() == WHITE){
+
+                    //Looking all legal moves for every white pieces
+                    for(int j=1;j<=64;j++){
+                        if((legalMove(getPiece(i),getPiece(j))) && (getPiece(j).getPieceType() != KING)){
+                            numberOfPossibleCheck +=1;
+
+                            //Testing for every legal moves of every black pieces
+                            // if you will be check
+                            if(willBeCheck(getPiece(i),getPiece(j))){
+
+                                numberOfCheck +=1;
+
+
+                            }
+                        }
+                    }
+
+                }
+            }
+            if(numberOfCheck == numberOfPossibleCheck){
+                return true;
+            }
+
+        }
+
+    }
+
+    return false;
+}
+
+bool Board::movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece kingTarget){
+
+    //Moving the rook
+    Piece empty(rook.getPosition(),NOCOLOR,NONE);
+
+    int rookTargetPosition,rookPosition;
+    rookTargetPosition = rookTarget.getPosition()-1;
+    rookPosition = rook.getPosition()-1;
+
+    //Change the attribute "position" of the rook by the position of the targeted square
+    rook.setPosition(rookTarget.getPosition());
+
+    //Replace the targeted square by the rook
+    this->m_board.at(rookTargetPosition) = rook;
+
+    //Replace the square where the rook was by an empty square
+    this->m_board.at(rookPosition) = empty;
+
+
+
+    //Moving the king
+
+    empty.setPosition(king.getPosition());
+
+    int kingTargetPosition,kingPosition;
+    kingTargetPosition = kingTarget.getPosition()-1;
+    kingPosition = king.getPosition()-1;
+
+    //Change the attribute "position" of the king by the position of the targeted square
+    king.setPosition(kingTarget.getPosition());
+
+    //Replace the targeted square by the king
+    this->m_board.at(kingTargetPosition) = king;
+
+    //Replace the square where the king was by an empty square
+    this->m_board.at(kingPosition) = empty;
+
+
+
+
+    //Change turn
+    switch(m_turn){
+     case(WHITE):
+        m_turn =BLACK;
+        break;
+     case(BLACK):
+        m_turn =WHITE;
+        break;
+    case(NOCOLOR):
+        break;
+
+    }
+
+
+    return true;
+}
+
+
+
+//Castling, return true if done
+void Board::castling(Piece rook){
+    Piece whiteKing = findWhiteKing();
+    Piece blackKing = findBlackKing();
+    //Ability for whites to castle
+    if((rook.getColor() == WHITE) && (m_whiteCastled == false) && (!isCheck(whiteKing)) && (whiteKing.getHasMoved() == false) && (rook.getHasMoved() == false)){
+
+        //Castling with the right rook (squares between the rook and the king have to be empty)
+        if((rook.getPosition() == 64) && (this->getPiece(63).getPieceType() == NONE) && (this->getPiece(62).getPieceType() == NONE) && (!willBeCheck(whiteKing, this->getPiece(63)))){
+            movePieceCastling(rook, whiteKing,this->getPiece(62),this->getPiece(63) );
+
+            //Whites have castled
+            m_whiteCastled =true;
+
+        }
+
+        //Castling with the left rook (squares between the rook and the king have to be empty)
+        if((rook.getPosition() == 57) && (this->getPiece(59).getPieceType() == NONE) && (this->getPiece(60).getPieceType() == NONE) && (!willBeCheck(whiteKing, this->getPiece(59)))){
+            movePieceCastling(rook, whiteKing,this->getPiece(60),this->getPiece(59) );
+
+            //Whites have castled
+            m_whiteCastled =true;
+
+        }
+
+
+    }
+
+    //Ability for blacks to castle
+    if((rook.getColor() == BLACK) && (m_blackCastled == false) && (!isCheck(blackKing)) && (blackKing.getHasMoved() == false) && (rook.getHasMoved() == false)){
+
+        //Castling with the right rook (squares between the rook and the king have to be empty)
+        if((rook.getPosition() == 8) && (this->getPiece(7).getPieceType() == NONE) && (this->getPiece(6).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(7)))){
+            movePieceCastling(rook, blackKing,this->getPiece(6),this->getPiece(7) );
+
+            //Black have castled
+            m_blackCastled =true;
+
+        }
+
+        //Castling with the left rook (squares between the rook and the king have to be empty)
+        if((rook.getPosition() == 1) && (this->getPiece(3).getPieceType() == NONE) && (this->getPiece(4).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(3)))){
+            movePieceCastling(rook, blackKing,this->getPiece(4),this->getPiece(3) );
+
+            //Whites have castled
+            m_blackCastled =true;
+
+        }
+
+
+    }
+
 }

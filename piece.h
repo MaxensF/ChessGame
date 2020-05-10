@@ -3,29 +3,32 @@
 #include <string>
 
 enum pieceType {KING,QUEEN,PAWN,ROOK,BISHOP,KNIGHT,NONE};
-enum pieceColor {BLACK,WHITE,NOCOLOR};
+enum color {BLACK,WHITE,NOCOLOR};
 typedef enum pieceType pieceType;
-typedef enum pieceColor pieceColor;
+typedef enum color Color;
 
 class Piece
 {
 public:
-    Piece(int position, pieceColor Color, pieceType pieceType);
+    Piece(int position, color Color, pieceType pieceType);
 
     int getPosition();
-    pieceColor getPieceColor();
+    color getColor();
     pieceType getPieceType();
+    bool getHasMoved();
 
     void setPosition(int position);
     void setPieceType(pieceType pieceType);
-    void setPieceColor( pieceColor pieceColor);
+    void setColor( color Color);
+    void setHasMoved(bool hasMoved);
 
 
 
 private:
     int m_position;
     pieceType m_pieceType;
-    pieceColor m_color;
+    color m_color;
+    bool m_hasMoved;
 
 
 };
