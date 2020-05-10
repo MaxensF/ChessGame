@@ -10,14 +10,21 @@ int main(int argc, char *argv[])
 
     // TEST TEST TEST TEST TEST TEST  
     // TEST TEST TEST TEST TEST TEST
-    /*
+    Piece piece(1,BLACK,ROOK);
     board.movePiece(board.getPiece(53),board.getPiece(45)); //W
     board.movePiece(board.getPiece(12),board.getPiece(20)); //B
     board.movePiece(board.getPiece(62),board.getPiece(26)); //W
     board.movePiece(board.getPiece(5),board.getPiece(12)); //B
     board.movePiece(board.getPiece(26),board.getPiece(19)); //W
-     board.movePiece(board.getPiece(19),board.getPiece(26));//B
-     */
+    board.movePiece(board.getPiece(11),board.getPiece(19));//B
+    board.movePiece(board.getPiece(56),board.getPiece(48)); //W
+    board.movePiece(board.getPiece(55),board.getPiece(47)); //W
+    board.movePiece(board.getPiece(19),board.getPiece(26));//B
+
+    if(board.isDraw()){
+        std::cout<<"DRAW"<<std::endl;
+    }
+
 
     //Checkmate in 4 moves for whites
     /*
@@ -48,6 +55,7 @@ int main(int argc, char *argv[])
 
    */
     //castling left rook
+    /*
 
     board.movePiece(board.getPiece(50),board.getPiece(42)); //W Moving pawn
     board.movePiece(board.getPiece(10),board.getPiece(18)); //B Moving pawn
@@ -71,7 +79,7 @@ int main(int argc, char *argv[])
     board.castling(board.getPiece(1)); //W castling
     board.castling(board.getPiece(57)); //B castling
 
-
+*/
 
 /*
     //Verifying checks/checkmates

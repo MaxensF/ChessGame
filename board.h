@@ -24,6 +24,7 @@ public:
     bool isCheckMate();
     bool movePiece(Piece piece, Piece target);
     bool movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece kingTarget);
+    bool isDraw();
 
     void showBoard();
     void AddNotAlivePiece(Piece piece);
@@ -33,6 +34,7 @@ public:
     std::vector<Piece> getNotAlivePiece();
     Piece findBlackKing();
     Piece findWhiteKing();
+
 
     int getMoveNumber();
 

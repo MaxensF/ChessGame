@@ -141,7 +141,6 @@ bool Board::isInTheSameColumn(Piece piece, Piece target){
     else{
         return false;
     }
-
 }
 
 
@@ -176,8 +175,6 @@ bool Board::isInTheSameDiagonal(Piece piece, Piece target){
                 return true;
             }
         }
-
-
     }
 
     //diagonals from up right corner to down left corner
@@ -313,7 +310,6 @@ int numberOfPieceBetween =0;
          if(numberOfPieceBetween !=0){
             return true;
         }
-
     }
 
     //diagonal from the top right corner to the left bottom corner
@@ -460,7 +456,6 @@ bool Board::legalMove(Piece piece, Piece target){
                          return true;
                     }
                 }
-
             }
             return false;
 
@@ -499,7 +494,6 @@ bool Board::willBeCheck(Piece piece, Piece target){
               numberOfPieceChecking +=1;
 
         }
-
     }
 
     //Moving a white piece
@@ -536,9 +530,7 @@ bool Board::isCheck(Piece king){
 
             return true;
              }
-
         }
-
     }
     return false;
 }
@@ -648,7 +640,6 @@ void Board::movePieceAnyway(Piece piece, Piece target){
         this->m_board.at(piecePosition) = empty;
 
     }
-
 }
 
 
@@ -723,10 +714,7 @@ void Board::showBoard(){
 
         if(line %8 == 0){
             std::cout<<std::endl;
-
-
         }
-
     }
 }
 
@@ -763,21 +751,15 @@ bool Board::isCheckMate(){
                             if(willBeCheck(getPiece(i),getPiece(j))){
 
                                 numberOfCheck +=1;
-
-
                             }
                         }
                     }
-
                 }
             }
             if(numberOfCheck == numberOfPossibleCheck){
                 return true;
             }
-
         }
-
-
     }
 
     //White's turn
@@ -798,25 +780,20 @@ bool Board::isCheckMate(){
                         if((legalMove(getPiece(i),getPiece(j))) && (getPiece(j).getPieceType() != KING)){
                             numberOfPossibleCheck +=1;
 
-                            //Testing for every legal moves of every black pieces
+                            //Testing for every legal moves of every white pieces
                             // if you will be check
                             if(willBeCheck(getPiece(i),getPiece(j))){
 
                                 numberOfCheck +=1;
-
-
                             }
                         }
                     }
-
                 }
             }
             if(numberOfCheck == numberOfPossibleCheck){
                 return true;
             }
-
         }
-
     }
 
     return false;
@@ -881,7 +858,7 @@ bool Board::movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece ki
 
 
 
-//Castling, return true if done
+//Castling rooks and kings
 void Board::castling(Piece rook){
     Piece whiteKing = findWhiteKing();
     Piece blackKing = findBlackKing();
@@ -905,8 +882,6 @@ void Board::castling(Piece rook){
             m_whiteCastled =true;
 
         }
-
-
     }
 
     //Ability for blacks to castle
@@ -916,7 +891,7 @@ void Board::castling(Piece rook){
         if((rook.getPosition() == 8) && (this->getPiece(7).getPieceType() == NONE) && (this->getPiece(6).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(7)))){
             movePieceCastling(rook, blackKing,this->getPiece(6),this->getPiece(7) );
 
-            //Black have castled
+            //Blacks have castled
             m_blackCastled =true;
 
         }
@@ -925,12 +900,132 @@ void Board::castling(Piece rook){
         if((rook.getPosition() == 1) && (this->getPiece(3).getPieceType() == NONE) && (this->getPiece(4).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(3)))){
             movePieceCastling(rook, blackKing,this->getPiece(4),this->getPiece(3) );
 
-            //Whites have castled
+            //Blacks have castled
             m_blackCastled =true;
 
         }
+    }
+}
 
 
+
+
+
+
+
+
+//Return true if it's your turn and you can't move a piece without being check
+//Will be used every turn
+bool Board::isDraw(){
+
+    //If there are 30 pieces dead, it's a king vs king
+    //which is impossible to finish
+    if(getNotAlivePiece().size() == 30){
+        return true;
     }
 
+    //only 2 kings + 1  piece left
+    if(getNotAlivePiece().size() == 29){
+        for(int i=1; i<=64;i++){
+            //it's a (king + bishop) vs king  or (king + knight) vs king.
+            //Impossible to win
+            if((getPiece(i).getPieceType() == BISHOP) || (getPiece(i).getPieceType() == KNIGHT)){
+                return true;
+            }
+        }
+    }
+
+    //only 2 kings and 2 pieces left
+    if(getNotAlivePiece().size() == 28){
+        int numberOfWhiteBishopAlive = 0;
+        int numberOfBlackBishopAlive = 0;
+        for(int i=1; i<=64;i++){
+
+            //it's a (king + bishop) vs (king + bishop).
+            //Impossible to win
+            if((getPiece(i).getPieceType() == BISHOP) && (getPiece(i).getColor() == WHITE)){
+                numberOfWhiteBishopAlive +=1;
+
+            }
+            if((getPiece(i).getPieceType() == BISHOP) && (getPiece(i).getColor() == BLACK)){
+                numberOfBlackBishopAlive +=1;
+            }
+        }
+        if((numberOfWhiteBishopAlive == 1) && (numberOfBlackBishopAlive == 1)){
+            return true;
+        }
+    }
+
+
+    //Black's turn
+    if(m_turn ==BLACK){
+        Piece blackKing = findBlackKing();
+
+        //To be draw, you're not in check
+        if(!isCheck(blackKing)){
+            int numberOfCheck =0;
+            int numberOfPossibleCheck =0;
+
+            //Finding all black pieces
+            for(int i=1;i<=64;i++){
+                if(getPiece(i).getColor() == BLACK){
+
+                    //Looking all legal moves for every black pieces
+                    for(int j=1;j<=64;j++){
+                        if((legalMove(getPiece(i),getPiece(j))) && (getPiece(j).getPieceType() != KING)){
+                            numberOfPossibleCheck +=1;
+
+                            //Testing for every legal moves of every black pieces
+                            // if you will be check
+                            if(willBeCheck(getPiece(i),getPiece(j))){
+
+                                numberOfCheck +=1;
+
+                            }
+                        }
+                    }
+                }
+            }
+            if(numberOfCheck == numberOfPossibleCheck){
+                return true;
+            }
+        }
+    }
+
+    //White's turn
+    if(m_turn ==WHITE){
+        Piece whiteKing = findWhiteKing();
+
+        //To be draw, you're not in check
+        if(!isCheck(whiteKing)){
+            int numberOfCheck =0;
+            int numberOfPossibleCheck =0;
+
+            //Finding all white pieces
+            for(int i=1;i<=64;i++){
+                if(getPiece(i).getColor() == WHITE){
+
+                    //Looking all legal moves for every white pieces
+                    for(int j=1;j<=64;j++){
+                        if((legalMove(getPiece(i),getPiece(j))) && (getPiece(j).getPieceType() != KING)){
+                            numberOfPossibleCheck +=1;
+
+                            //Testing for every legal moves of every white pieces
+                            // if you will be check
+                            if(willBeCheck(getPiece(i),getPiece(j))){
+
+                                numberOfCheck +=1;
+
+                            }
+                        }
+                    }
+                }
+            }
+            if(numberOfCheck == numberOfPossibleCheck){
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
