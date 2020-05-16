@@ -17,14 +17,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     board.cpp \
+    gamewindow.cpp \
     main.cpp \
     mainwindow.cpp \
-    piece.cpp
+    piece.cpp \
+    pieceslabel.cpp
 
 HEADERS += \
     board.h \
+    gamewindow.h \
     mainwindow.h \
-    piece.h
+    piece.h \
+    pieceslabel.h
 
 FORMS += \
     mainwindow.ui

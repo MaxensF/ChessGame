@@ -3,13 +3,17 @@
 #include "board.h"
 #include <QApplication>
 #include <iostream>
+#include <QDesktopWidget>
+#include "gamewindow.h"
 
 int main(int argc, char *argv[])
 {
+    QApplication a(argc, argv);
     Board board;
 
     // TEST TEST TEST TEST TEST TEST  
     // TEST TEST TEST TEST TEST TEST
+
 
     //Test of the promotion
     board.movePiece(board.getPiece(56),board.getPiece(40)); //W
@@ -94,16 +98,21 @@ int main(int argc, char *argv[])
 */
 
 
+
+
     board.showBoard();
 
 
+    GameWindow gameWindow;
+    gameWindow.show();
 
 
 
-    QApplication a(argc, argv);
-  //  MainWindow w;
-  //  w.show();
 
-   // return a.exec();
+
+// MainWindow w;
+ // w.show();
+
+    return a.exec();
     return 0;
 }
