@@ -35,7 +35,7 @@ public:
     std::vector<Piece> getNotAlivePiece();
     Piece findBlackKing();
     Piece findWhiteKing();
-
+    std::vector<Piece> getPossibleMoves(Piece piece);
 
     int getMoveNumber();
 

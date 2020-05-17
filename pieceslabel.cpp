@@ -107,18 +107,16 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
 
         //The move has been done
         if (m_boardPieces->movePiece(m_firstSelectedPiece,m_secondSelectedPiece)){
-            drawGamePixmap(m_boardPieces->getBoard());
 
         }
+        drawGamePixmap(m_boardPieces->getBoard());
     }
 
     //First click on a piece (selecting a piece)
     if(m_boardPieces->getPiece(position).getPieceType() != NONE){
         m_firstSelectedPiece = m_boardPieces->getPiece(position);
         m_selected = true;
-        std::cout<<" x1 = "<<m_mousePoint.x()<<std::endl;
-        std::cout<<" y1 = "<<m_mousePoint.y()<<std::endl;
-
+        drawGamePixmap(m_boardPieces->getBoard());
     }
 
 
@@ -178,7 +176,7 @@ QRect PiecesLabel::positionToRectangle(int position){
 //Draw a Pixmap of the current game and display it
 void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
 
-    //Creating rectangle for the painter
+    //Creating rectangles for the painter
     QRect boardSize(QPoint(0,0),QPoint(m_labelHeight,m_labelHeight));
     QRect pieceSize(QPoint(-m_labelHeight/64,-m_labelHeight/64),QPoint(m_labelHeight/8,m_labelHeight/8));
 
@@ -195,6 +193,24 @@ void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
     QRect positionRect;
     pieceType pieceType;
     Color pieceColor;
+
+
+    //If a piece is selected show where it can move
+    // with a blue square
+    if(m_selected == true){
+        std::vector <Piece> possibleMoves = m_boardPieces->getPossibleMoves(m_firstSelectedPiece);
+        int sizePossibleMoves = possibleMoves.size();
+
+        for(int i=0; i<sizePossibleMoves;i++){
+            positionRect = positionToRectangle(possibleMoves.at(i).getPosition());
+            QBrush blueBrush(Qt::blue);
+            painter->setBrush(blueBrush);
+            painter->drawRect(positionRect);
+
+        }
+
+
+    }
 
 
     for(int i=0;i<=63;i++){
@@ -277,5 +293,7 @@ void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
 bool PiecesLabel::getSelected(){
     return m_selected;
 }
+
+
 
 

@@ -429,8 +429,9 @@ bool Board::legalMove(Piece piece, Piece target){
                     }
                 }
 
-                //Pawns can skip 1 square if it's first time they move
-                if((piece.getPosition() >= 48) && (piece.getPosition() <= 56)){
+                //Pawns can skip 1 square if it's first time they move and there is no piece
+                //between them and the targeted square
+                if((piece.getPosition() >= 48) && (piece.getPosition() <= 56) && (!columnPieceBetween(piece, target))){
                     if((piece.getPosition() == target.getPosition() + 16) && target.getPieceType() == NONE){
                         return true;
                     }
@@ -450,8 +451,9 @@ bool Board::legalMove(Piece piece, Piece target){
                     }
                 }
 
-                //Pawns can skip 1 square if it's first time they move
-                if((piece.getPosition() >= 9) && (piece.getPosition() <= 16)){
+                //Pawns can skip 1 square if it's first time they move and there is no piece
+                //between them and the targeted square
+                if((piece.getPosition() >= 9) && (piece.getPosition() <= 16) && (!columnPieceBetween(piece, target))){
                     if((piece.getPosition() == target.getPosition() - 16) && target.getPieceType() == NONE){
                          return true;
                     }
@@ -1074,6 +1076,32 @@ void Board::promotion(Piece pawn ,Piece piece){
 }
 
 
+
+
+
+//Return all the squares where the piece can move
+std::vector<Piece> Board::getPossibleMoves(Piece piece){
+
+    //Saving parameters of the actual board
+    std::vector <Piece> board = this->getBoard();      
+    std::vector <Piece> PossiblesMoves;
+    Color turn;
+    turn =m_turn;
+
+    for(int i=0;i<=63;i++){   
+        //Do the move
+        if(movePiece(piece,board.at(i))){
+            PossiblesMoves.push_back(board.at(i));
+
+            //cancelling the move by replacing the board by
+            //the previous board
+            m_board = board;
+            m_turn = turn;
+
+        }
+    }
+    return PossiblesMoves;
+}
 
 
 
