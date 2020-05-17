@@ -72,7 +72,7 @@ Board::Board()
 
     //Nobody has castled
     m_whiteCastled = false;
-    m_blackCastled = false;
+    m_blackCastled = false;   
 
 }
 

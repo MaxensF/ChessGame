@@ -5,17 +5,19 @@
 #include <iostream>
 #include <QDesktopWidget>
 #include "gamewindow.h"
+#include "pieceslabel.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Board board;
+    Board *board = new Board;
 
     // TEST TEST TEST TEST TEST TEST  
     // TEST TEST TEST TEST TEST TEST
 
 
     //Test of the promotion
+    /*
     board.movePiece(board.getPiece(56),board.getPiece(40)); //W
     board.movePiece(board.getPiece(9),board.getPiece(25)); //B
     board.movePiece(board.getPiece(40),board.getPiece(32)); //W
@@ -26,7 +28,7 @@ int main(int argc, char *argv[])
     board.movePiece(board.getPiece(41),board.getPiece(50));//B
     board.movePiece(board.getPiece(15),board.getPiece(8)); //W
     board.movePiece(board.getPiece(50),board.getPiece(57));//B
-
+    */
 
 
     //Checkmate in 4 moves for whites
@@ -100,10 +102,14 @@ int main(int argc, char *argv[])
 
 
 
-    board.showBoard();
+    board->showBoard();
 
 
-    GameWindow gameWindow;
+    GameWindow gameWindow(board);
+
+
+
+
     gameWindow.show();
 
 

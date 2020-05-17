@@ -1,5 +1,6 @@
 #include "gamewindow.h"
 #include "pieceslabel.h"
+#include "pieceslabel.h"
 #include <QWidget>
 #include <QLabel>
 #include <QApplication>
@@ -10,7 +11,7 @@
 #include <QLayout>
 #include <QMouseEvent>
 
-GameWindow::GameWindow(QWidget *parent) :
+GameWindow::GameWindow(Board *board, QWidget *parent) :
  QWidget(parent)
  {
 
@@ -27,15 +28,11 @@ GameWindow::GameWindow(QWidget *parent) :
 
 
     //Put the Board at the center of the window
+    m_piecesLabel = new PiecesLabel(board,this);
     QVBoxLayout *vLayout = new QVBoxLayout;
     QHBoxLayout *hLayout = new QHBoxLayout;
-    PiecesLabel *piecesLabel = new PiecesLabel(this);
-    vLayout->addWidget(piecesLabel,0,Qt::AlignHCenter);
-    hLayout->addWidget(piecesLabel,0,Qt::AlignHCenter);
-
-
-
-
+    vLayout->addWidget(m_piecesLabel,0,Qt::AlignHCenter);
+    hLayout->addWidget(m_piecesLabel,0,Qt::AlignHCenter);
 
 
 
@@ -81,5 +78,7 @@ void GameWindow::setHeight(int height){
     m_height = height;
 }
 
-
+PiecesLabel *GameWindow::getPieceLabel(){
+    return m_piecesLabel;
+}
 

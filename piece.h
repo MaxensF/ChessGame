@@ -10,7 +10,7 @@ typedef enum color Color;
 class Piece
 {
 public:
-    Piece(int position, color Color, pieceType pieceType);
+    Piece(int position =0, color Color = NOCOLOR, pieceType pieceType =NONE);
 
     int getPosition();
     color getColor();
