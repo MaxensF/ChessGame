@@ -37,6 +37,13 @@ GameWindow::GameWindow(Board *board, QWidget *parent) :
 
     this->setLayout(vLayout);
 
+    //Center the window
+    int x = (QApplication::desktop()->width()/2) -(width/4);
+    int y = (QApplication::desktop()->height()/2) - (height/2);
+    this->move(x,y);
+
+    //Set the window icon
+    this->setWindowIcon(QIcon("://Pieces/BlackKnight.png"));
 
 
 }

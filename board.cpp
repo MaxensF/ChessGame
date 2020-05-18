@@ -619,7 +619,7 @@ bool Board::movePiece(Piece piece, Piece target){
         if((piece.getPieceType() == PAWN)){
             switch(piece.getColor()){
                 case(BLACK):
-                    if((piece.getPosition() >=56) && (piece.getPosition() <=64)){
+                    if((piece.getPosition() >=57) && (piece.getPosition() <=64)){
                         Piece promotion(1,BLACK,QUEEN);
                         this->promotion(piece, promotion);
 
@@ -965,34 +965,35 @@ bool Board::isDraw(){
 
     //If there are 30 pieces dead, it's a king vs king
     //which is impossible to finish
-    if(getNotAlivePiece().size() == 30){
+    int notAlivePiece = this->getNotAlivePiece().size();
+    if(notAlivePiece == 30){
         return true;
     }
 
     //only 2 kings + 1  piece left
-    if(getNotAlivePiece().size() == 29){
+    if(notAlivePiece == 29){
         for(int i=1; i<=64;i++){
             //it's a (king + bishop) vs king  or (king + knight) vs king.
             //Impossible to win
-            if((getPiece(i).getPieceType() == BISHOP) || (getPiece(i).getPieceType() == KNIGHT)){
+            if((this->getPiece(i).getPieceType() == BISHOP) || (this->getPiece(i).getPieceType() == KNIGHT)){
                 return true;
             }
         }
     }
 
     //only 2 kings and 2 pieces left
-    if(getNotAlivePiece().size() == 28){
+    if(notAlivePiece == 28){
         int numberOfWhiteBishopAlive = 0;
         int numberOfBlackBishopAlive = 0;
         for(int i=1; i<=64;i++){
 
             //it's a (king + bishop) vs (king + bishop).
             //Impossible to win
-            if((getPiece(i).getPieceType() == BISHOP) && (getPiece(i).getColor() == WHITE)){
+            if((this->getPiece(i).getPieceType() == BISHOP) && (this->getPiece(i).getColor() == WHITE)){
                 numberOfWhiteBishopAlive +=1;
 
             }
-            if((getPiece(i).getPieceType() == BISHOP) && (getPiece(i).getColor() == BLACK)){
+            if((this->getPiece(i).getPieceType() == BISHOP) && (this->getPiece(i).getColor() == BLACK)){
                 numberOfBlackBishopAlive +=1;
             }
         }
@@ -1101,8 +1102,10 @@ void Board::promotion(Piece pawn ,Piece piece){
 std::vector<Piece> Board::getPossibleMoves(Piece piece){
 
     //Saving parameters of the actual board
-    std::vector <Piece> board = this->getBoard();      
+    std::vector <Piece> board = this->getBoard();
+    std::vector <Piece> deadPiece = this->getNotAlivePiece();
     std::vector <Piece> PossiblesMoves;
+
     Color turn;
     turn =m_turn;
 
@@ -1115,6 +1118,7 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
             //the previous board
             m_board = board;
             m_turn = turn;
+            m_notAlive=deadPiece;
 
         }
     }

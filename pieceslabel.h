@@ -19,6 +19,7 @@ public:
     QRect positionToRectangle(int position);
     void drawGamePixmap(std::vector <Piece> board);
     bool getSelected();
+    void endWindow();
 private:
     int m_labelHeight;
     int m_labelWidth;
@@ -42,6 +43,10 @@ private:
     Piece m_firstSelectedPiece;
     Piece m_secondSelectedPiece;
     Board *m_boardPieces;
+    bool m_gameEnded;
+
+public slots:
+    void playAgain();
 
 signals:
 

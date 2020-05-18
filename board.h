@@ -38,9 +38,7 @@ public:
     Piece findWhiteKing();
     std::vector<Piece> getPossibleMoves(Piece piece);
 
-    int getMoveNumber();
-
-
+    int getMoveNumber();      
 
 private:
     const std::string m_coordinates [64] ={"a8","b8","c8","d8","e8","f8","g8","h8",

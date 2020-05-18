@@ -5,11 +5,13 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QBoxLayout>
 #include <QLabel>
 #include <QPainter>
 #include "piece.h"
 #include "board.h"
+#include <QPushButton>
+#include <QLayout>
+#include <QStyle>
 
 
 PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
@@ -87,25 +89,10 @@ PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
     //Draw the board
     drawGamePixmap(m_boardPieces->getBoard());
 
-}
-
-
-
-
-void endWindow(){
-
-    QWidget endWindow;
-
-    //Getting srceen informations
-     const int width = 50;
-     const int height = 50;
-
-     // Set the size attributes for things in the window
-    endWindow.setFixedSize(width,height);
-    endWindow.show();
-
+    m_gameEnded = false;
 
 }
+
 
 
 
@@ -119,7 +106,7 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
         position = clickToPosition(event->pos());
     }
     //Second click on a piece (moving a piece)
-    if(m_selected == true){
+    if((m_selected == true) && (m_gameEnded == false)){
         m_secondSelectedPiece = m_boardPieces->getPiece(position);
         m_selected = false;
 
@@ -129,8 +116,6 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
             //Stop the game if there is a draw/checkmate
             if(m_boardPieces->isCheckMate() || (m_boardPieces->isDraw())){
                 endWindow();
-                std::cout<<"checkmate"<<std::endl;
-
             }
         }
 
@@ -408,5 +393,99 @@ bool PiecesLabel::getSelected(){
     return m_selected;
 }
 
+
+
+
+
+
+void PiecesLabel::endWindow(){
+
+    m_gameEnded = true;
+
+    //The widget which will popup
+    QWidget *endWindow = new QWidget;
+
+    //Layout of the popup
+    QGridLayout *layout = new QGridLayout;
+    endWindow->setLayout(layout);
+
+    //Buttons on the popup
+    QPushButton *playAgain = new QPushButton("Play again",endWindow);
+    QPushButton *quit = new QPushButton("Quit",endWindow);
+
+    //Text informing who won
+    QLabel *text = new QLabel;
+    text->setAlignment(Qt::AlignCenter);
+    QFont font("Daytona", 18, QFont::Bold, false);
+    font.setStyleStrategy(QFont::PreferAntialias);
+    text->setFont(font);
+
+
+
+    if(m_boardPieces->isDraw()){
+        text->setText("Draw");
+
+    }
+    if (m_boardPieces->isCheckMate()){
+        if(m_boardPieces->getTurn() == WHITE){
+            text->setText("Blacks won");
+        }
+        if(m_boardPieces->getTurn() == BLACK){
+            text->setText("Whites won");
+        }
+
+    }
+
+    //Positionning buttons in the layout
+    layout->addWidget(text,0,1,1,2);
+    layout->addWidget(playAgain,1,0,1,2);
+    layout->addWidget(quit,1,2,1,2);
+
+    //The quit button close both windows
+    connect(quit,SIGNAL(clicked()),qApp,SLOT(closeAllWindows()));
+
+    //The playAgain button close both windows and launch a new game
+    connect(playAgain,SIGNAL(clicked()),endWindow,SLOT(close()));
+    connect(playAgain,SIGNAL(clicked()),endWindow,SLOT(close()));
+    connect(playAgain,SIGNAL(clicked()),this,SLOT(playAgain()));
+
+
+    //Center the window
+    int y = (QApplication::desktop()->height()/2) - (endWindow->size().height()/4);
+    int x = (QApplication::desktop()->width()/2) -  (endWindow->size().width()/8);
+    endWindow->move(x,y);
+
+    //Set icon and title of the window
+    endWindow->setWindowIcon(QIcon("://Pieces/BlackKnight.png"));
+    endWindow->QWidget::setWindowTitle (QString("Game Over"));
+
+    //Set minimum size of the window
+    endWindow->setMinimumSize(QSize(250,80));
+
+    //show the window
+    endWindow->show();
+
+
+}
+
+
+
+
+
+//Launch a new game
+void PiecesLabel::playAgain(){
+    //Create a new board and erase the pevious
+    Board *board = new Board;
+    m_boardPieces = board;
+
+    //Unfreeze the peices moves
+    m_gameEnded =false;
+
+    //Avoid player from playing with a selected piece in the previous game
+    m_selected =false;
+
+    //Draw the new board
+    drawGamePixmap(m_boardPieces->getBoard());
+}
 
 
