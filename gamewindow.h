@@ -15,6 +15,7 @@ class GameWindow : public QWidget
     void setHeight(int height);
     void setWidht(int width);
     PiecesLabel* getPieceLabel();
+    void showCheckMate();
 
 private:
     int m_height;

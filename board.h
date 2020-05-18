@@ -11,6 +11,7 @@ public:
     Board();
     Piece getPiece(int position);
     std::vector <Piece> getBoard();
+    bool getTurn();
 
     bool isInTheSameDiagonal(Piece piece, Piece target);
     bool isInTheSameColumn(Piece piece , Piece target);

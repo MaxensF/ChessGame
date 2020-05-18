@@ -365,7 +365,11 @@ bool Board::legalMove(Piece piece, Piece target){
         //Moving a king
         case(KING):
             if((target.getPosition() - 1 == piece.getPosition() ) || (target.getPosition() + 1 == piece.getPosition()) || (target.getPosition() + 8 == piece.getPosition()) || (target.getPosition() - 8 == piece.getPosition()) || (target.getPosition() - 9 == piece.getPosition()) || (target.getPosition() + 9 == piece.getPosition()) || (target.getPosition() - 7 == piece.getPosition()) || (target.getPosition() + 7 == piece.getPosition()) ){
-                return true;
+
+                //Avoid king from crossing the entire baord with just one move
+                if(!(((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 1)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 0)))){
+                    return true;
+                }
             }
             return false;
 
@@ -387,7 +391,11 @@ bool Board::legalMove(Piece piece, Piece target){
         //Moving a knight
         case(KNIGHT):
             if((target.getPosition() - 17 == piece.getPosition() ) || (target.getPosition() - 15 == piece.getPosition() )|| (target.getPosition() - 10 == piece.getPosition() ) || (target.getPosition() - 6 == piece.getPosition() ) || (target.getPosition() + 17 == piece.getPosition() ) || (target.getPosition() + 15 == piece.getPosition() )|| (target.getPosition() + 10 == piece.getPosition() ) || (target.getPosition() + 6 == piece.getPosition() ) ){
-                return true;
+
+                //Avoid knight from crossing the entire baord with just one move
+                if(!(((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 1)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 0)) || ((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 2)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 7)) || ((piece.getPosition()%8 == 2) && (target.getPosition()%8 == 0)) || ((piece.getPosition()%8 == 7) && (target.getPosition()%8 == 1)))){
+                    return true;
+                }
              }
              return false;
 
@@ -424,8 +432,13 @@ bool Board::legalMove(Piece piece, Piece target){
 
                 //Attacking with a white pawn
                 if(( piece.getPosition() == target.getPosition() +7 ) || (piece.getPosition() == target.getPosition() +9)){
-                    if(target.getPieceType() != NONE){
-                        return  true;
+
+                    //Avoid pawn from crossing the entire baord with just one move
+                    if(!(((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 1)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 0)) )){
+
+                        if(target.getPieceType() != NONE){
+                             return  true;
+                        }
                     }
                 }
 
@@ -446,8 +459,13 @@ bool Board::legalMove(Piece piece, Piece target){
 
                 //Attacking with a black pawn
                 if(( piece.getPosition() == target.getPosition() -7 ) || (piece.getPosition() == target.getPosition() -9)){
-                    if(target.getPieceType() != NONE ){
-                        return true;
+
+                    //Avoid pawn from crossing the entire baord with just one move
+                    if(!(((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 1)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 0)) )){
+
+                        if(target.getPieceType() != NONE){
+                             return  true;
+                        }
                     }
                 }
 
@@ -1103,5 +1121,12 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
     return PossiblesMoves;
 }
 
+
+
+
+
+bool Board::getTurn(){
+    return m_turn;
+}
 
 

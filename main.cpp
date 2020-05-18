@@ -107,9 +107,6 @@ int main(int argc, char *argv[])
 
     GameWindow gameWindow(board);
 
-
-
-
     gameWindow.show();
 
 

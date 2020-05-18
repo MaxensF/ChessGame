@@ -20,10 +20,9 @@ GameWindow::GameWindow(Board *board, QWidget *parent) :
      const int width = ((QApplication::desktop()->width())/6)*5;
      const int height = ((QApplication::desktop()->height())/6)*5;
 
-     // Set size of the window
+     // Set the size attributes for things in the window
     setWidht(width);
     setHeight(height);
-    setFixedSize(getWidth(), getHeight());
 
 
 
@@ -37,11 +36,6 @@ GameWindow::GameWindow(Board *board, QWidget *parent) :
 
 
     this->setLayout(vLayout);
-
-
-
-
-
 
 
 
@@ -78,7 +72,22 @@ void GameWindow::setHeight(int height){
     m_height = height;
 }
 
+
+
 PiecesLabel *GameWindow::getPieceLabel(){
     return m_piecesLabel;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

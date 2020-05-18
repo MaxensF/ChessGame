@@ -36,12 +36,12 @@ PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
     //Setting all the white pieces sizes
     //Pieces are a little bit smaller than squares
 
-    m_whitePawn = m_whitePawn.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_whiteRook = m_whiteRook.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_whiteKnight = m_whiteKnight.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_whiteBishop = m_whiteBishop.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_whiteQueen = m_whiteQueen.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_whiteKing = m_whiteKing.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whitePawn = m_whitePawn.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whiteRook = m_whiteRook.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whiteKnight = m_whiteKnight.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whiteBishop = m_whiteBishop.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whiteQueen = m_whiteQueen.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_whiteKing = m_whiteKing.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 
     //Setting all the pixmaps for the black pieces
@@ -55,12 +55,12 @@ PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
 
     //Setting all the black pieces sizes
     //Pieces are a little bit smaller than squares
-    m_blackPawn = m_blackPawn.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_blackRook = m_blackRook.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_blackKnight = m_blackKnight.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_blackBishop = m_blackBishop.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_blackQueen = m_blackQueen.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    m_blackKing = m_blackKing.scaled(m_labelHeight/9,m_labelHeight/9,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackPawn = m_blackPawn.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackRook = m_blackRook.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackKnight = m_blackKnight.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackBishop = m_blackBishop.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackQueen = m_blackQueen.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    m_blackKing = m_blackKing.scaled(m_labelHeight/8,m_labelHeight/8,Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 
     //Setting the board pixmap
@@ -92,6 +92,24 @@ PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
 
 
 
+void endWindow(){
+
+    QWidget endWindow;
+
+    //Getting srceen informations
+     const int width = 50;
+     const int height = 50;
+
+     // Set the size attributes for things in the window
+    endWindow.setFixedSize(width,height);
+    endWindow.show();
+
+
+}
+
+
+
+
 //Set m_mousePoint cooridnates after each click on the board
 void PiecesLabel::mousePressEvent(QMouseEvent *event){
     int position = 0;
@@ -108,14 +126,27 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
         //The move has been done
         if (m_boardPieces->movePiece(m_firstSelectedPiece,m_secondSelectedPiece)){
 
+            //Stop the game if there is a draw/checkmate
+            if(m_boardPieces->isCheckMate() || (m_boardPieces->isDraw())){
+                endWindow();
+                std::cout<<"checkmate"<<std::endl;
+
+            }
         }
+
         drawGamePixmap(m_boardPieces->getBoard());
+
     }
 
     //First click on a piece (selecting a piece)
-    if(m_boardPieces->getPiece(position).getPieceType() != NONE){
+    if((m_boardPieces->getPiece(position).getPieceType() != NONE) && (m_selected == false)){
         m_firstSelectedPiece = m_boardPieces->getPiece(position);
         m_selected = true;
+        drawGamePixmap(m_boardPieces->getBoard());
+    }
+
+    //The player didn't clicked on a piece on the first click
+    else if((m_boardPieces->getPiece(position).getPieceType() == NONE) && (m_selected == false)){
         drawGamePixmap(m_boardPieces->getBoard());
     }
 
@@ -146,6 +177,9 @@ int PiecesLabel::clickToPosition(QPoint point){
 
 
 
+
+
+
 QRect PiecesLabel::positionToRectangle(int position){
     int xPos,yPos,x2Pos,y2Pos;
     QPoint leftTopCorner,rightBottomCorner;
@@ -173,12 +207,14 @@ QRect PiecesLabel::positionToRectangle(int position){
 
 
 
+
+
 //Draw a Pixmap of the current game and display it
 void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
 
     //Creating rectangles for the painter
     QRect boardSize(QPoint(0,0),QPoint(m_labelHeight,m_labelHeight));
-    QRect pieceSize(QPoint(-m_labelHeight/64,-m_labelHeight/64),QPoint(m_labelHeight/8,m_labelHeight/8));
+    QRect pieceSize(QPoint(0,0),QPoint(m_labelHeight/8,m_labelHeight/8));
 
 
     //Setting the painter attributes
@@ -193,6 +229,13 @@ void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
     QRect positionRect;
     pieceType pieceType;
     Color pieceColor;
+    Piece king;
+    if(m_boardPieces->getTurn() == BLACK){
+        king = m_boardPieces->findBlackKing();
+    }
+    else if(m_boardPieces->getTurn() == WHITE){
+        king = m_boardPieces->findWhiteKing();
+    }
 
 
     //If a piece is selected show where it can move
@@ -201,15 +244,86 @@ void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
         std::vector <Piece> possibleMoves = m_boardPieces->getPossibleMoves(m_firstSelectedPiece);
         int sizePossibleMoves = possibleMoves.size();
 
-        for(int i=0; i<sizePossibleMoves;i++){
-            positionRect = positionToRectangle(possibleMoves.at(i).getPosition());
-            QBrush blueBrush(Qt::blue);
-            painter->setBrush(blueBrush);
-            painter->drawRect(positionRect);
+        //Draw blue squares where selected piece can move
+         for(int i=0; i<sizePossibleMoves;i++){
+             positionRect = positionToRectangle(possibleMoves.at(i).getPosition());
+
+             //Center of the Gradient
+             int yMid = positionRect.top() + (positionRect.bottom() - positionRect.top() )/2;
+             int xMid = positionRect.left() + (positionRect.right() - positionRect.left() )/2;
+
+             //border of the square
+             int x1= positionRect.left()+2;
+             int y1 = positionRect.top()+2;
+             int x2= positionRect.right()-2;
+             int y2 = positionRect.bottom()-2;
+             QPen pen1(QColor(0, 47, 88),4);
+             painter->setPen(pen1);
+           //  painter->setClipPath(Qt::)
+             QRect border(QPoint(x1,y1),QPoint(x2,y2));
+             painter->drawRect(border);
+
+             //Drawing the gradient
+             QRadialGradient radialGradient(xMid,yMid,150,xMid,yMid);
+             radialGradient.setColorAt(0,QColor(0, 47, 186,100));
+             radialGradient.setColorAt(1,QColor(0, 47, 186,220));
+             QPen pen(Qt::NoPen);
+             painter->setPen(pen);
+             painter->fillRect(positionRect,radialGradient);
 
         }
 
+         //Show what piece is selected in gray
+         positionRect = positionToRectangle(m_firstSelectedPiece.getPosition());
+         //Center of the Gradient
+         int yMid = positionRect.top() + (positionRect.bottom() - positionRect.top() )/2;
+         int xMid = positionRect.left() + (positionRect.right() - positionRect.left() )/2;
 
+         //border of the square
+         int x1= positionRect.left()+2;
+         int y1 = positionRect.top()+2;
+         int x2= positionRect.right()-2;
+         int y2 = positionRect.bottom()-2;
+         QPen pen1(QColor(79, 77, 84),4);
+         painter->setPen(pen1);
+         QRect border(QPoint(x1,y1),QPoint(x2,y2));
+         painter->drawRect(border);
+
+         //Drawing the gradient
+         QRadialGradient radialGradient(xMid,yMid,150,xMid,yMid);
+         radialGradient.setColorAt(0,QColor(79, 77, 84,100));
+         radialGradient.setColorAt(1,QColor(79, 77, 84,220));
+         QPen pen(Qt::NoPen);
+         painter->setPen(pen);
+         painter->fillRect(positionRect,radialGradient);
+
+    }
+
+    //Draw red square under the king if he's check
+    if(m_boardPieces->isCheck(king)){
+         positionRect = positionToRectangle(king.getPosition());
+
+         //Center of the Gradient
+         int yMid = positionRect.top() + (positionRect.bottom() - positionRect.top() )/2;
+         int xMid = positionRect.left() + (positionRect.right() - positionRect.left() )/2;
+
+         //border of the square
+         int x1= positionRect.left()+2;
+         int y1 = positionRect.top()+2;
+         int x2= positionRect.right()-2;
+         int y2 = positionRect.bottom()-2;
+         QPen pen1(QColor(203, 65, 66),4);
+         painter->setPen(pen1);
+         QRect border(QPoint(x1,y1),QPoint(x2,y2));
+         painter->drawRect(border);
+
+         //Drawing the gradient
+         QRadialGradient radialGradient(xMid,yMid,150,xMid,yMid);
+         radialGradient.setColorAt(0,QColor(203, 65, 66,100));
+         radialGradient.setColorAt(1,QColor(203, 65, 66,220));
+         QPen pen(Qt::NoPen);
+         painter->setPen(pen);
+         painter->fillRect(positionRect,radialGradient);
     }
 
 
@@ -293,7 +407,6 @@ void PiecesLabel::drawGamePixmap(std::vector <Piece> board){
 bool PiecesLabel::getSelected(){
     return m_selected;
 }
-
 
 
 
