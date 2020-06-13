@@ -369,7 +369,7 @@ bool Board::legalMove(Piece piece, Piece target){
                 //Avoid king from crossing the entire baord with just one move
                 if(!(((piece.getPosition()%8 == 0) && (target.getPosition()%8 == 1)) || ((piece.getPosition()%8 == 1) && (target.getPosition()%8 == 0)))){
                     return true;
-                }
+                }     
             }
             return false;
 
@@ -444,7 +444,7 @@ bool Board::legalMove(Piece piece, Piece target){
 
                 //Pawns can skip 1 square if it's first time they move and there is no piece
                 //between them and the targeted square
-                if((piece.getPosition() >= 48) && (piece.getPosition() <= 56) && (!columnPieceBetween(piece, target))){
+                if((piece.getPosition() >= 49) && (piece.getPosition() <= 56) && (!columnPieceBetween(piece, target))){
                     if((piece.getPosition() == target.getPosition() + 16) && target.getPieceType() == NONE){
                         return true;
                     }
@@ -586,7 +586,77 @@ std::vector<Piece> Board::getNotAlivePiece(){
 //Return true if the move has been done successfully
 bool Board::movePiece(Piece piece, Piece target){
 
+    //Castling
+    if((piece.getPieceType() == KING) && (m_turn == piece.getColor())){
 
+        //Castling white king
+        if(m_turn == WHITE){
+            std::vector <Piece> whiteRooks = findWhiteRooks();
+            int whiteRooksNumber = whiteRooks.size();
+
+            //Small castling
+            if((target.getPosition() == 63)){
+                for(int i=0; i< whiteRooksNumber; i++){
+
+                   //Choose the rook
+                    if(whiteRooks.at(i).getPosition() == 64){
+                        if(castling(whiteRooks.at(i))){
+                            m_moveNumber +=1;
+                            return true;
+                        }
+                    }
+                }
+            }
+            //Big castling
+            if((target.getPosition() == 59)){
+                for(int i=0; i< whiteRooksNumber; i++){
+
+                    //Choose the rook
+                    if(whiteRooks.at(i).getPosition() == 57){
+                        if(castling(whiteRooks.at(i))){
+                            m_moveNumber +=1;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+        }
+        if(m_turn == BLACK){
+            std::vector <Piece> blackRooks = findBlackRooks();
+            int blackRooksNumber = blackRooks.size();
+
+            //Small castling
+            if((target.getPosition() == 7)){
+                for(int i=0; i< blackRooksNumber; i++){
+
+                   //Choose the rook
+                    if(blackRooks.at(i).getPosition() == 8){
+                        if(castling(blackRooks.at(i))){
+                            m_moveNumber +=1;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            //Big castling
+            if((target.getPosition() == 3)){
+                for(int i=0; i< blackRooksNumber; i++){
+
+                   //Choose the rook
+                    if(blackRooks.at(i).getPosition() == 1){
+                        if(castling(blackRooks.at(i))){
+                            m_moveNumber +=1;
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Normal move
     if(legalMove(piece, target) && !willBeCheck(piece, target) && (target.getPieceType() != KING) && (m_turn == piece.getColor())){
 
         //Add the piece which was on the target square in the vector of dead pieces
@@ -903,8 +973,8 @@ bool Board::movePieceCastling(Piece rook, Piece king, Piece rookTarget, Piece ki
 
 
 
-//Castling rooks and kings
-void Board::castling(Piece rook){
+//Castle if it's possible
+bool Board::castling(Piece rook){
     Piece whiteKing = findWhiteKing();
     Piece blackKing = findBlackKing();
     //Ability for whites to castle
@@ -913,18 +983,18 @@ void Board::castling(Piece rook){
         //Castling with the right rook (squares between the rook and the king have to be empty)
         if((rook.getPosition() == 64) && (this->getPiece(63).getPieceType() == NONE) && (this->getPiece(62).getPieceType() == NONE) && (!willBeCheck(whiteKing, this->getPiece(63)))){
             movePieceCastling(rook, whiteKing,this->getPiece(62),this->getPiece(63) );
-
             //Whites have castled
             m_whiteCastled =true;
+            return true;
 
         }
 
         //Castling with the left rook (squares between the rook and the king have to be empty)
         if((rook.getPosition() == 57) && (this->getPiece(59).getPieceType() == NONE) && (this->getPiece(60).getPieceType() == NONE) && (!willBeCheck(whiteKing, this->getPiece(59)))){
             movePieceCastling(rook, whiteKing,this->getPiece(60),this->getPiece(59) );
-
             //Whites have castled
             m_whiteCastled =true;
+            return true;
 
         }
     }
@@ -935,21 +1005,22 @@ void Board::castling(Piece rook){
         //Castling with the right rook (squares between the rook and the king have to be empty)
         if((rook.getPosition() == 8) && (this->getPiece(7).getPieceType() == NONE) && (this->getPiece(6).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(7)))){
             movePieceCastling(rook, blackKing,this->getPiece(6),this->getPiece(7) );
-
             //Blacks have castled
             m_blackCastled =true;
+            return true;
 
         }
 
         //Castling with the left rook (squares between the rook and the king have to be empty)
         if((rook.getPosition() == 1) && (this->getPiece(3).getPieceType() == NONE) && (this->getPiece(4).getPieceType() == NONE) && (!willBeCheck(blackKing, this->getPiece(3)))){
             movePieceCastling(rook, blackKing,this->getPiece(4),this->getPiece(3) );
-
             //Blacks have castled
-            m_blackCastled =true;
+             m_blackCastled =true;
+            return true;
 
         }
     }
+    return false;
 }
 
 
@@ -1106,8 +1177,14 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
     std::vector <Piece> deadPiece = this->getNotAlivePiece();
     std::vector <Piece> PossiblesMoves;
 
+    //For castling
+    bool hasMoved = piece.getHasMoved();
+    bool whiteCastled = m_whiteCastled;
+    bool blackCastled = m_blackCastled;
+
     Color turn;
     turn =m_turn;
+
 
     for(int i=0;i<=63;i++){   
         //Do the move
@@ -1119,6 +1196,10 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
             m_board = board;
             m_turn = turn;
             m_notAlive=deadPiece;
+            piece.setHasMoved(hasMoved);
+            m_moveNumber --;
+            m_whiteCastled = whiteCastled;
+            m_blackCastled = blackCastled;
 
         }
     }
@@ -1132,5 +1213,34 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
 bool Board::getTurn(){
     return m_turn;
 }
+
+
+
+
+//Return white rooks
+std::vector <Piece> Board::findWhiteRooks(){
+    std::vector <Piece> whiteRooks;
+    for(int i=1; i<=64;i++){
+        if((getPiece(i).getPieceType() == ROOK) && (getPiece(i).getColor() == WHITE)){
+            whiteRooks.push_back(getPiece(i));
+        }
+    }
+    return whiteRooks;
+}
+
+
+
+
+//Return black rooks
+std::vector <Piece> Board::findBlackRooks(){
+    std::vector <Piece> blackRooks;
+    for(int i=1; i<=64;i++){
+        if((getPiece(i).getPieceType() == ROOK) && (getPiece(i).getColor() == BLACK)){
+            blackRooks.push_back(getPiece(i));
+        }
+    }
+    return blackRooks;
+}
+
 
 

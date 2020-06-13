@@ -31,11 +31,13 @@ public:
     void showBoard();
     void AddNotAlivePiece(Piece piece);
     void movePieceAnyway(Piece piece, Piece target);
-    void castling(Piece rook);
+    bool castling(Piece rook);
 
     std::vector<Piece> getNotAlivePiece();
     Piece findBlackKing();
     Piece findWhiteKing();
+    std::vector <Piece> findWhiteRooks();
+    std::vector <Piece> findBlackRooks();
     std::vector<Piece> getPossibleMoves(Piece piece);
 
     int getMoveNumber();      

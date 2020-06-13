@@ -28,14 +28,12 @@ GameWindow::GameWindow(Board *board, QWidget *parent) :
 
     //Put the Board at the center of the window
     m_piecesLabel = new PiecesLabel(board,this);
-    QVBoxLayout *vLayout = new QVBoxLayout;
-    QHBoxLayout *hLayout = new QHBoxLayout;
-    vLayout->addWidget(m_piecesLabel,0,Qt::AlignHCenter);
-    hLayout->addWidget(m_piecesLabel,0,Qt::AlignHCenter);
+    QGridLayout *Layout = new QGridLayout;
+    Layout->addWidget(m_piecesLabel,0,Qt::AlignCenter);
 
 
 
-    this->setLayout(vLayout);
+    this->setLayout(Layout);
 
     //Center the window
     int x = (QApplication::desktop()->width()/2) -(width/4);
