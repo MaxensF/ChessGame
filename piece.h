@@ -16,16 +16,23 @@ public:
     color getColor();
     pieceType getPieceType();
     bool getHasMoved();
+    int getMoveNumber();
+    int getLastMoveNumber();
 
     void setPosition(int position);
     void setPieceType(pieceType pieceType);
     void setColor( color Color);
     void setHasMoved(bool hasMoved);
+    void setMoveNumber(int moveNumber);
+    void setLastMoveNumber(int lastMoveNumber);
+
 
 
 
 private:
     int m_position;
+    int m_moveNumber;
+    int m_lastMoveNumber;
     pieceType m_pieceType;
     color m_color;
     bool m_hasMoved;

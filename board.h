@@ -31,7 +31,10 @@ public:
     void showBoard();
     void AddNotAlivePiece(Piece piece);
     void movePieceAnyway(Piece piece, Piece target);
+    void deletePiece(Piece piece);
     bool castling(Piece rook);
+    bool enPassant(Piece piece, Piece target);
+    bool possibleEnPassant(Piece piece, Piece target);
 
     std::vector<Piece> getNotAlivePiece();
     Piece findBlackKing();

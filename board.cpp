@@ -439,6 +439,9 @@ bool Board::legalMove(Piece piece, Piece target){
                         if(target.getPieceType() != NONE){
                              return  true;
                         }
+                        if(possibleEnPassant(piece,target) && (target.getPieceType() == NONE)){
+                            return true;
+                        }
                     }
                 }
 
@@ -465,6 +468,9 @@ bool Board::legalMove(Piece piece, Piece target){
 
                         if(target.getPieceType() != NONE){
                              return  true;
+                        }
+                        if(possibleEnPassant(piece,target) && (target.getPieceType() == NONE)){
+                            return true;
                         }
                     }
                 }
@@ -658,11 +664,24 @@ bool Board::movePiece(Piece piece, Piece target){
 
     //Normal move
     if(legalMove(piece, target) && !willBeCheck(piece, target) && (target.getPieceType() != KING) && (m_turn == piece.getColor())){
+        Piece copiePiece = piece;
+        Piece copieTarget =target;
+
+        if(enPassant(copiePiece,copieTarget)){
+
+        }
+
+        //Used for en passant
+        int moveNumber = piece.getMoveNumber();
+        moveNumber++;
+        piece.setMoveNumber(moveNumber);
+        piece.setLastMoveNumber(m_moveNumber);
 
         //Add the piece which was on the target square in the vector of dead pieces
         if(target.getPieceType() != NONE){
             AddNotAlivePiece(target);
         }
+
         Piece empty(piece.getPosition(),NOCOLOR,NONE);
         int targetPosition,piecePosition;
         targetPosition=target.getPosition()-1;
@@ -682,6 +701,10 @@ bool Board::movePiece(Piece piece, Piece target){
         //Indicate that the piece has move at least one time.
         //Used for castling
         this->m_board.at(targetPosition).setHasMoved(true);
+
+
+
+
 
 
         //If a pawn arrive at the end of the board
@@ -1182,6 +1205,10 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
     bool whiteCastled = m_whiteCastled;
     bool blackCastled = m_blackCastled;
 
+    //Used for en passant
+    int moveNumber = piece.getMoveNumber();
+    int lastMoveNumber = m_moveNumber;
+
     Color turn;
     turn =m_turn;
 
@@ -1200,6 +1227,8 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
             m_moveNumber --;
             m_whiteCastled = whiteCastled;
             m_blackCastled = blackCastled;
+            piece.setMoveNumber(moveNumber);
+            piece.setLastMoveNumber(lastMoveNumber);
 
         }
     }
@@ -1244,3 +1273,77 @@ std::vector <Piece> Board::findBlackRooks(){
 
 
 
+//En passant
+bool Board::enPassant(Piece piece, Piece target){
+
+    if(piece.getColor() == WHITE){
+
+        //En passant for black pawns
+        if ((possibleEnPassant(piece,target)) && (legalMove(piece,target)) ){
+            Piece nextLinePiece = getPiece(target.getPosition()+8);
+
+                AddNotAlivePiece(nextLinePiece);
+                deletePiece(nextLinePiece);
+                return true;
+        }
+     }
+
+    if(piece.getColor() == BLACK){
+
+        //En passant for white pawns
+        if (possibleEnPassant(piece,target) && (legalMove(piece,target)) ){
+            Piece nextLinePiece = getPiece(target.getPosition()-8);
+            AddNotAlivePiece(nextLinePiece);
+            deletePiece(nextLinePiece);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
+
+
+
+//Delete the piece from the board
+void Board::deletePiece(Piece piece){
+    int position = piece.getPosition();
+    Piece empty(position,NOCOLOR,NONE);
+    m_notAlive.push_back(piece);
+    m_board.at(position-1) = empty;
+}
+
+
+
+
+//Return true if en passant is possible
+bool Board::possibleEnPassant(Piece piece, Piece target){
+
+   if(piece.getColor() == WHITE){
+
+        //En passant for black pawns
+        if (( (target.getPosition())>16 ) && ((target.getPosition())<25 )){
+            Piece nextLinePiece = getPiece(target.getPosition()+8);
+
+            //En passant is possible if it's on a pawn which moved only one time and it was on the last turn
+            if(( nextLinePiece.getColor() == BLACK) && ( nextLinePiece.getPieceType() == PAWN) && (nextLinePiece.getLastMoveNumber() == (m_moveNumber-1)) && (nextLinePiece.getMoveNumber() == 1)){
+                std::cout<<"a"<<std::endl;
+                return true;
+            }
+        }
+    }
+    if(piece.getColor() == BLACK){
+
+        //En passant for white pawns
+        if (( (target.getPosition())>40 ) && ((target.getPosition())<49 ) ){
+            Piece nextLinePiece = getPiece(target.getPosition()-8);
+
+            //En passant is possible if it's on a pawn which moved only one time and it was on the last turn
+            if(( nextLinePiece.getColor() == WHITE) && ( nextLinePiece.getPieceType() == PAWN) && (nextLinePiece.getLastMoveNumber() == (m_moveNumber-1)) && (nextLinePiece.getMoveNumber() == 1)){
+                return true;
+            }
+        }
+    }
+    return false;
+}

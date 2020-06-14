@@ -8,6 +8,8 @@ Piece::Piece(int Position, color color,pieceType pieceType)
     m_position = Position;
     m_pieceType = pieceType;
     m_hasMoved = false;
+    m_moveNumber = 0;
+    m_lastMoveNumber =-2;
 }
 
 
@@ -54,11 +56,24 @@ bool Piece::getHasMoved(){
     return m_hasMoved;
 }
 
+int Piece::getMoveNumber(){
+    return m_moveNumber;
+}
+
+int Piece::getLastMoveNumber(){
+    return m_lastMoveNumber;
+}
 
 
 
+void Piece::setLastMoveNumber(int lastMoveNumber){
+    m_lastMoveNumber = lastMoveNumber;
+}
 
 
+void Piece::setMoveNumber(int moveNumber){
+    m_moveNumber = moveNumber;
+}
 
 
 
