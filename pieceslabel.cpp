@@ -89,8 +89,8 @@ PiecesLabel::PiecesLabel(Board *board,QWidget *parent) : QLabel(parent)
     //Draw the board
     drawGamePixmap(m_boardPieces->getBoard());
 
+    //Set m_gameEnded
     m_gameEnded = false;
-
 }
 
 
@@ -106,13 +106,17 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
         position = clickToPosition(event->pos());
     }
     //Second click on a piece (moving a piece)
-    if((m_selected == true) && (m_gameEnded == false)){
+    if((m_selected == true) && (m_gameEnded == false) && (!m_boardPieces->getWaitingForPromotion())){
         m_secondSelectedPiece = m_boardPieces->getPiece(position);
         m_selected = false;
 
         //The move has been done
         if (m_boardPieces->movePiece(m_firstSelectedPiece,m_secondSelectedPiece)){
 
+            //Promoting a pawn
+            if(m_boardPieces->getWaitingForPromotion()){
+                promotionWindow();
+            }
             //Stop the game if there is a draw/checkmate
             if(m_boardPieces->isCheckMate() || (m_boardPieces->isDraw())){
                 endWindow();
@@ -124,7 +128,7 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
     }
 
     //First click on a piece (selecting a piece)
-    if((m_boardPieces->getPiece(position).getPieceType() != NONE) && (m_selected == false)){
+    if((m_boardPieces->getPiece(position).getPieceType() != NONE) && (m_selected == false) && (!m_boardPieces->getWaitingForPromotion()) ){
         m_firstSelectedPiece = m_boardPieces->getPiece(position);
         m_selected = true;
         drawGamePixmap(m_boardPieces->getBoard());
@@ -134,7 +138,6 @@ void PiecesLabel::mousePressEvent(QMouseEvent *event){
     else if((m_boardPieces->getPiece(position).getPieceType() == NONE) && (m_selected == false)){
         drawGamePixmap(m_boardPieces->getBoard());
     }
-
 
 }
 
@@ -416,7 +419,7 @@ void PiecesLabel::endWindow(){
     //Text informing who won
     QLabel *text = new QLabel;
     text->setAlignment(Qt::AlignCenter);
-    QFont font("Daytona", 18, QFont::Bold, false);
+    QFont font("Arial", 18, QFont::Bold, false);
     font.setStyleStrategy(QFont::PreferAntialias);
     text->setFont(font);
 
@@ -478,7 +481,7 @@ void PiecesLabel::playAgain(){
     Board *board = new Board;
     m_boardPieces = board;
 
-    //Unfreeze the peices moves
+    //Unfreeze the pieces moves
     m_gameEnded =false;
 
     //Avoid player from playing with a selected piece in the previous game
@@ -488,4 +491,169 @@ void PiecesLabel::playAgain(){
     drawGamePixmap(m_boardPieces->getBoard());
 }
 
+
+
+void PiecesLabel::promotionWindow(){
+
+    //The widget which will popup
+    QWidget *promotionWindow = new QWidget;
+
+
+    //Layout of the popup
+    QHBoxLayout *layout = new QHBoxLayout;
+    promotionWindow->setLayout(layout);
+
+    //Buttons for the choice
+    m_queen = new QPushButton(promotionWindow);
+    m_rook = new QPushButton(promotionWindow);
+    m_knight = new QPushButton(promotionWindow);
+    m_bishop = new QPushButton(promotionWindow);
+
+    //Promotion of a black Pawn
+    if(m_boardPieces->getPromotedPawn().getColor() == BLACK){
+
+        //Black queen button
+        QIcon blackQueen(m_blackQueen);
+        m_queen->setIcon(blackQueen);
+        m_queen->setIconSize(m_blackQueen.rect().size());
+
+        //Black rook button
+        QIcon blackRook(m_blackRook);
+        m_rook->setIcon(blackRook);
+        m_rook->setIconSize(m_blackRook.rect().size());
+
+        //Black knight button
+        QIcon blackKnight(m_blackKnight);
+        m_knight->setIcon(blackKnight);
+        m_knight->setIconSize(m_blackKnight.rect().size());
+
+        //Black bishop button
+        QIcon blackBishop(m_blackBishop);
+        m_bishop->setIcon(blackBishop);
+        m_bishop->setIconSize(m_blackBishop.rect().size());
+
+    }
+
+    if(m_boardPieces->getPromotedPawn().getColor() == WHITE){
+
+        //White queen button
+        QIcon whiteQueen(m_whiteQueen);
+        m_queen->setIcon(whiteQueen);
+        m_queen->setIconSize(m_whiteQueen.rect().size());
+
+        //White rook button
+        QIcon whiteRook(m_whiteRook);
+        m_rook->setIcon(whiteRook);
+        m_rook->setIconSize(m_whiteRook.rect().size());
+
+        //White knight button
+        QIcon whiteKnight(m_whiteKnight);
+        m_knight->setIcon(whiteKnight);
+        m_knight->setIconSize(m_whiteKnight.rect().size());
+
+        //White bishop button
+        QIcon whiteBishop(m_whiteBishop);
+        m_bishop->setIcon(whiteBishop);
+        m_bishop->setIconSize(m_whiteBishop.rect().size());
+    }
+
+    //When clicked, buttons start returnPiece
+    connect(m_queen,SIGNAL(clicked()),this,SLOT(returnPiece()));
+    connect(m_rook,SIGNAL(clicked()),this,SLOT(returnPiece()));
+    connect(m_knight,SIGNAL(clicked()),this,SLOT(returnPiece()));
+    connect(m_bishop,SIGNAL(clicked()),this,SLOT(returnPiece()));
+
+    //Close the window when a button is clicked
+    connect(m_queen,SIGNAL(clicked()),promotionWindow,SLOT(close()));
+    connect(m_rook,SIGNAL(clicked()),promotionWindow,SLOT(close()));
+    connect(m_knight,SIGNAL(clicked()),promotionWindow,SLOT(close()));
+    connect(m_bishop,SIGNAL(clicked()),promotionWindow,SLOT(close()));
+
+    //Adding buttons to the layout
+    layout->addWidget(m_queen,0,0);
+    layout->addWidget(m_rook,1,0);
+    layout->addWidget(m_knight,2,0);
+    layout->addWidget(m_bishop,3,0);
+
+    //Window is frameless
+    promotionWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+
+    //Show the window
+    promotionWindow->show();
+
+    //Disable resizing of the window
+    promotionWindow->setFixedSize(promotionWindow->size());
+
+    //Set the window on the middle of screen
+    int width = promotionWindow->width();
+    int height = promotionWindow->height();
+    int x = (QApplication::desktop()->width()/2) -(width/3);
+    int y = (QApplication::desktop()->height()/2) - (height/2);
+    promotionWindow->move(x,y);
+}
+
+
+//Change the m_promotion of the board class by the button clicked
+void PiecesLabel::returnPiece(){
+
+    //Find which button was clicked
+    QObject* send = sender();
+
+    //Unfreeze the game
+    m_boardPieces->setWaitingForPromotion(false);
+
+    //White button
+    if(m_boardPieces->getPromotedPawn().getColor() == WHITE){
+
+        //Pieces for the "return"
+        Piece whiteQueenPiece(0,WHITE,QUEEN);
+        Piece whiteRookPiece(0,WHITE,ROOK);
+        Piece whiteKnightPiece(0,WHITE,KNIGHT);
+        Piece whiteBishopPiece(0,WHITE,BISHOP);
+
+        if(send == m_queen){
+           m_boardPieces->setPromotion(whiteQueenPiece);
+        }
+        if(send == m_rook){
+           m_boardPieces->setPromotion(whiteRookPiece);
+        }
+        if(send == m_knight){
+           m_boardPieces->setPromotion(whiteKnightPiece);
+        }
+        if(send == m_bishop){
+           m_boardPieces->setPromotion(whiteBishopPiece);
+        }
+    }
+
+
+
+    //Black button
+    if(m_boardPieces->getPromotedPawn().getColor() == BLACK){
+
+        //Pieces for the "return"
+        Piece blackQueenPiece(0,BLACK,QUEEN);
+        Piece blackRookPiece(0,BLACK,ROOK);
+        Piece blackKnightPiece(0,BLACK,KNIGHT);
+        Piece blackBishopPiece(0,BLACK,BISHOP);
+
+        if(send == m_queen){
+           m_boardPieces->setPromotion(blackQueenPiece);
+        }
+        if(send == m_rook){
+           m_boardPieces->setPromotion(blackRookPiece);
+        }
+        if(send == m_knight){
+           m_boardPieces->setPromotion(blackKnightPiece);
+        }
+        if(send == m_bishop){
+           m_boardPieces->setPromotion(blackBishopPiece);
+        }
+    }
+
+    //Make the promotion
+    m_boardPieces->promotion(m_boardPieces->getPromotedPawn(),m_boardPieces->getPromotion());
+
+    //Draw the board
+    drawGamePixmap(m_boardPieces->getBoard());
+}
 

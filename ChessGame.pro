@@ -20,6 +20,7 @@ SOURCES += \
     gamewindow.cpp \
     main.cpp \
     mainwindow.cpp \
+    menuwindow.cpp \
     piece.cpp \
     pieceslabel.cpp
 
@@ -27,6 +28,7 @@ HEADERS += \
     board.h \
     gamewindow.h \
     mainwindow.h \
+    menuwindow.h \
     piece.h \
     pieceslabel.h
 

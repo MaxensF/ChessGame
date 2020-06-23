@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QWidget>
 #include <vector>
+#include <QPushButton>
 #include "board.h"
 #include "piece.h"
 
@@ -20,6 +21,7 @@ public:
     void drawGamePixmap(std::vector <Piece> board);
     bool getSelected();
     void endWindow();
+    void promotionWindow();
 private:
     int m_labelHeight;
     int m_labelWidth;
@@ -45,8 +47,14 @@ private:
     Board *m_boardPieces;
     bool m_gameEnded;
 
+    QPushButton *m_queen;
+    QPushButton *m_rook;
+    QPushButton *m_knight;
+    QPushButton *m_bishop;
+
 public slots:
     void playAgain();
+    void returnPiece();
 
 signals:
 

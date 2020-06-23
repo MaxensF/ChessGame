@@ -6,11 +6,12 @@
 #include <QDesktopWidget>
 #include "gamewindow.h"
 #include "pieceslabel.h"
+#include <menuwindow.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    Board *board = new Board;
+
 
     // TEST TEST TEST TEST TEST TEST  
     // TEST TEST TEST TEST TEST TEST
@@ -100,16 +101,8 @@ int main(int argc, char *argv[])
 */
 
 
-
-
-    //board->showBoard();
-
-    GameWindow gameWindow(board);
-
-    gameWindow.show();
-
-
-
+    MenuWindow menu;
+    menu.show();
 
     return a.exec();
     return 0;

@@ -15,5 +15,8 @@
         <file>Pieces/WhiteQueen.png</file>
         <file>Pieces/WhiteRook.png</file>
         <file>Board/Board.png</file>
+        <file>Board/boardLetters.png</file>
+        <file>Board/boardNumbers.png</file>
+        <file>Menu/menuBackground.jpg</file>
     </qresource>
 </RCC>

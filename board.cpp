@@ -1,6 +1,7 @@
 #include "board.h"
 #include <iostream>
 #include "piece.h"
+#include <QApplication>
 
 
 
@@ -72,7 +73,11 @@ Board::Board()
 
     //Nobody has castled
     m_whiteCastled = false;
-    m_blackCastled = false;   
+    m_blackCastled = false;
+
+    //No pawns to promote
+    m_waitingForPromotion = false;
+    m_promotionColor =NOCOLOR;
 
 }
 
@@ -667,9 +672,7 @@ bool Board::movePiece(Piece piece, Piece target){
         Piece copiePiece = piece;
         Piece copieTarget =target;
 
-        if(enPassant(copiePiece,copieTarget)){
-
-        }
+        enPassant(copiePiece,copieTarget);
 
         //Used for en passant
         int moveNumber = piece.getMoveNumber();
@@ -703,33 +706,30 @@ bool Board::movePiece(Piece piece, Piece target){
         this->m_board.at(targetPosition).setHasMoved(true);
 
 
-
-
-
-
         //If a pawn arrive at the end of the board
         //the pawn is promoted to a queen/rook/knight/bishop
         if((piece.getPieceType() == PAWN)){
             switch(piece.getColor()){
                 case(BLACK):
                     if((piece.getPosition() >=57) && (piece.getPosition() <=64)){
-                        Piece promotion(1,BLACK,QUEEN);
-                        this->promotion(piece, promotion);
 
+                        m_waitingForPromotion = true;
+                        m_promotionColor = BLACK;
+                        m_promotedPawn = piece;
                     }
                     break;
                 case(WHITE):
                     if((piece.getPosition() >= 1) && (piece.getPosition() <= 8 )){
-                        Piece promotion(1,WHITE,QUEEN);
-                        this->promotion(piece,promotion);
 
+                        m_waitingForPromotion = true;
+                        m_promotionColor = WHITE;
+                        m_promotedPawn = piece;
                      }
                     break;
             case(NOCOLOR):
                     break;
 
             }
-
         }
 
 
@@ -1205,9 +1205,13 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
     bool whiteCastled = m_whiteCastled;
     bool blackCastled = m_blackCastled;
 
+    //For promotion
+    bool waitingForPromotion = m_waitingForPromotion;
+
     //Used for en passant
     int moveNumber = piece.getMoveNumber();
     int lastMoveNumber = m_moveNumber;
+    Piece empty;
 
     Color turn;
     turn =m_turn;
@@ -1229,6 +1233,8 @@ std::vector<Piece> Board::getPossibleMoves(Piece piece){
             m_blackCastled = blackCastled;
             piece.setMoveNumber(moveNumber);
             piece.setLastMoveNumber(lastMoveNumber);
+            m_waitingForPromotion = waitingForPromotion;
+            m_promotedPawn = empty;
 
         }
     }
@@ -1328,7 +1334,6 @@ bool Board::possibleEnPassant(Piece piece, Piece target){
 
             //En passant is possible if it's on a pawn which moved only one time and it was on the last turn
             if(( nextLinePiece.getColor() == BLACK) && ( nextLinePiece.getPieceType() == PAWN) && (nextLinePiece.getLastMoveNumber() == (m_moveNumber-1)) && (nextLinePiece.getMoveNumber() == 1)){
-                std::cout<<"a"<<std::endl;
                 return true;
             }
         }
@@ -1346,4 +1351,37 @@ bool Board::possibleEnPassant(Piece piece, Piece target){
         }
     }
     return false;
+}
+
+
+
+
+void Board::setPromotion(Piece piece){
+    m_promotion = piece;
+}
+
+
+
+bool Board::getWaitingForPromotion(){
+    return m_waitingForPromotion;
+}
+
+void Board::setWaitingForPromotion(bool waitingForPromotion){
+    m_waitingForPromotion = waitingForPromotion;
+}
+
+
+
+Color Board::getPromotionColor(){
+    return m_promotionColor;
+}
+
+
+Piece Board::getPromotion(){
+    return m_promotion;
+}
+
+
+Piece Board::getPromotedPawn(){
+    return m_promotedPawn;
 }

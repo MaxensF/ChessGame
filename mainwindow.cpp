@@ -34,16 +34,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->Button->setStyleSheet("QPushButton:flat:pressed { border: none; };");
 
 
-
-
-
-
-
-
-
-
-
-
 }
 
 MainWindow::~MainWindow()
